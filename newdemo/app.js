@@ -10,6 +10,28 @@ var aboutRouter = require('./routes/about');
 
 var app = express();
 
+// Load environment variables from .env file “.env ← filename” const mongoose = require('mongoose');
+require('dotenv').config();
+
+// Import Mongoose for MongoDB connection
+const mongoose = require('mongoose');
+
+// MongoDB URI from .env file
+const uri = process.env.MONGODB_URI;
+
+// Connect to MongoDB
+mongoose
+  .connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log('Connected to MongoDB!');
+  })
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error);
+  });
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 //we are telling node "views" is the directory where your views are stored
