@@ -1,21 +1,22 @@
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
 
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
+var aboutRouter = require('./routes/about');
 
 var app = express();
 
 // view engine setup
-app.set("views", path.join(__dirname, "views"));
+app.set('views', path.join(__dirname, 'views'));
 //we are telling node "views" is the directory where your views are stored
 
-app.set("view engine", "hbs");
+app.set('view engine', 'hbs');
 
-app.use(logger("dev"));
+app.use(logger('dev'));
 // morgan is a logging library that logs HTTP requests to the console
 // it is used for debugging and monitoring purposes
 // it logs the HTTP method, URL, status code, response time, and other details of each request
@@ -34,16 +35,18 @@ app.use(cookieParser());
 // it is used to parse cookies in the request headers and make them available in req.cookies
 // Cookies are small pieces of data that are stored on the client side and sent to the server with each request
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, 'public')));
 // express.static() is a middleware that serves static files from a specified directory
 // static files are such as images, CSS files, and JavaScript files
 
 // route grouping
-app.use("/", indexRouter);
+app.use('/', indexRouter);
 // indexRouter is a router that handles requests to the root URL ("/")
 
-app.use("/users", usersRouter);
+app.use('/users', usersRouter);
 // usersRouter is a router that handles requests to the /users URL
+
+app.use('/about', aboutRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -55,11 +58,11 @@ app.use(function (req, res, next) {
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
   res.status(err.status || 500);
-  res.render("error");
+  res.render('error');
 });
 
 module.exports = app;
