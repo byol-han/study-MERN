@@ -7,6 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var aboutRouter = require('./routes/about');
+var Book = require('./models/book'); // Import the book model
 
 var app = express();
 
@@ -15,6 +16,7 @@ require('dotenv').config();
 
 // Import Mongoose for MongoDB connection
 const mongoose = require('mongoose');
+const { title } = require('process');
 
 // MongoDB URI from .env file
 const uri = process.env.MONGODB_URI;
@@ -31,6 +33,49 @@ mongoose
   .catch((error) => {
     console.error('Error connecting to MongoDB:', error);
   });
+
+function saveBook(title, author) {
+  const newBook = new Book({
+    title: title,
+    author: author,
+    pages: 180,
+  });
+
+  newBook
+    .save()
+    .then((book) => console.log('New book added:', book))
+    .catch((error) => console.error('Error:', error));
+}
+saveBook('The Great Gatsby', 'F. Scott Fitzgerald');
+
+function findBooks(foundByTitle) {
+  Book.find({ title: foundByTitle })
+    .then((book) => console.log('Books found:', book))
+    .catch((error) => console.error('Error:', error));
+}
+
+findBooks('The Great Gatsby');
+
+function updateBook(oldTitle, newTitle, newAuthor) {
+  Book.updateOne(
+    { title: oldTitle },
+    { title: newTitle, author: newAuthor }
+  ).then((book) =>
+    console
+      .log('Book updated:', book)
+      .catch((error) => console.log('Error:', error))
+  );
+}
+updateBook('The Great Gatsby', 'The Greaterrrrrr', 'Byol');
+
+function deleteBook(deleteByTitle) {
+  Book.deleteOne({ title: deleteByTitle }).then((book) =>
+    console
+      .log('Book deleted:', book)
+      .catch((error) => console.log('Error:', error))
+  );
+}
+deleteBook('The Greate Gatsby');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
