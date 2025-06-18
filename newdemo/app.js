@@ -46,7 +46,7 @@ function saveBook(title, author) {
     .then((book) => console.log('New book added:', book))
     .catch((error) => console.error('Error:', error));
 }
-saveBook('The Great Gatsby', 'F. Scott Fitzgerald');
+saveBook('The Great Gatsby123', 'F. Scott Fitzgerald');
 
 function findBooks(foundByTitle) {
   Book.find({ title: foundByTitle })
@@ -54,26 +54,19 @@ function findBooks(foundByTitle) {
     .catch((error) => console.error('Error:', error));
 }
 
-findBooks('The Great Gatsby');
+// findBooks('The Great Gatsby');
 
 function updateBook(oldTitle, newTitle, newAuthor) {
-  Book.updateOne(
-    { title: oldTitle },
-    { title: newTitle, author: newAuthor }
-  ).then((book) =>
-    console
-      .log('Book updated:', book)
-      .catch((error) => console.log('Error:', error))
-  );
+  Book.updateOne({ title: oldTitle }, { title: newTitle, author: newAuthor })
+    .then((book) => console.log('Book updated:', book))
+    .catch((error) => console.log('Error:', error));
 }
-updateBook('The Great Gatsby', 'The Greaterrrrrr', 'Byol');
+// updateBook('The Great Gatsby', 'The Greaterrrrrr', 'Byol');
 
 function deleteBook(deleteByTitle) {
-  Book.deleteOne({ title: deleteByTitle }).then((book) =>
-    console
-      .log('Book deleted:', book)
-      .catch((error) => console.log('Error:', error))
-  );
+  Book.deleteOne({ title: deleteByTitle })
+    .then((book) => console.log('Book deleted:', book))
+    .catch((error) => console.log('Error:', error));
 }
 deleteBook('The Greate Gatsby');
 
