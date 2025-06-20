@@ -1,15 +1,23 @@
 var createError = require('http-errors');
 var express = require('express');
+const passport = require('passport');
+const session = require('express-session');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var hbs = require('hbs');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var aboutRouter = require('./routes/about');
+var registerRouter = require('./routes/register');
+var loginRouter = require('./routes/login');
 var Book = require('./models/book'); // Import the book model
+var User = require('./models/user');
 
 var app = express();
+
+const LocalStrategy = require('passport-local').Strategy;
 
 // Load environment variables from .env file “.env ← filename” const mongoose = require('mongoose');
 require('dotenv').config();
@@ -34,6 +42,7 @@ mongoose
     console.error('Error connecting to MongoDB:', error);
   });
 
+/* creating book lists 
 function saveBook(title, author) {
   const newBook = new Book({
     title: title,
@@ -69,6 +78,7 @@ function deleteBook(deleteByTitle) {
     .catch((error) => console.log('Error:', error));
 }
 deleteBook('The Greate Gatsby');
+*/
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -90,6 +100,22 @@ app.use(express.urlencoded({ extended: false }));
 // it is used to parse URL-encoded data in the request body and make it available in req.body
 // URL-encoded data is typically used in HTML forms when the form's method is set to "POST"
 
+// 세션 기반 로그인 상태 유지
+app.use(
+  session({
+    secret: 'yourSessionSecret',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.authenticate('local');
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use(cookieParser());
 // cookieParser() is a middleware that parses cookies attached to the client request object
 // it is used to parse cookies in the request headers and make them available in req.cookies
@@ -107,6 +133,8 @@ app.use('/users', usersRouter);
 // usersRouter is a router that handles requests to the /users URL
 
 app.use('/about', aboutRouter);
+app.use('/register', registerRouter);
+app.use('/login', loginRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
