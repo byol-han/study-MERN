@@ -5,23 +5,22 @@ const User = require('../models/user');
 
 /* Set up for Registration */
 
-// GET /register → register.hbs 보여주기
+// GET /register → show register.hbs
 router.get('/', (req, res) => {
   res.render('register', { title: 'Register' });
 });
 
-// POST /register → 사용자 등록 처리
+// POST /register → register a new user
 router.post('/', (req, res, next) => {
   const { username, password } = req.body;
-  // User.register 는 passport-local-mongoose 의 메서드
+  // User.register is passport-local-mongoose method to register a new user
   User.register(new User({ username: username }), password, (err, user) => {
     if (err) {
-      console.log('Registration error:', err);
       return res.render('register', { title: 'Register', error: err.message });
     }
-    // 등록 성공 → 자동 로그인
+    // if registration is successful, authenticate the user
     passport.authenticate('local')(req, res, () => {
-      res.redirect('/'); // 회원가입 후 이동할 경로
+      res.redirect('/login'); // url to redirect after successful registration
     });
   });
 });

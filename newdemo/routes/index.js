@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const passport = require('passport');
 
 /* GET home page. */
 
@@ -13,4 +14,16 @@ router.get('/', function (req, res, next) {
   });
 });
 
+router.get(
+  '/github',
+  passport.authenticate('github', { scope: ['user.email'] })
+);
+
+router.get(
+  '/github/callback',
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  (req, res) => {
+    res.redirect('/');
+  }
+);
 module.exports = router;

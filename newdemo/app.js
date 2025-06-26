@@ -6,6 +6,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var hbs = require('hbs');
+var githubStrategy = require('passport-github2').Strategy;
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -110,6 +111,33 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+
+passport.use(
+  new githubStrategy(
+    {
+      clientID: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackURL: 'http://localhost:3000/github/callback',
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      // Attempt to find an existing user with the GitHub profile ID
+      const user = await User.findOne({ oauthId: profile.id });
+      if (user) {
+        return done(null, user);
+      } else {
+        // If user does not exist, create a new one
+        const newUser = new User({
+          username: profile.username,
+          oauthId: profile.id,
+          oauthProvider: 'Github',
+          created: Date.now(),
+        });
+        const savedUser = await newUser.save();
+        return done(null, savedUser);
+      }
+    }
+  )
+);
 
 passport.authenticate('local');
 passport.use(User.createStrategy());
